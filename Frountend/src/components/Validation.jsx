@@ -41,7 +41,7 @@ export const validateRegistration = (values) => {
     }
   }
 
-  // ✅ Confirm Password check
+  //  Confirm Password check
   if (!values.confirmPassword) {
     errors.confirmPassword = 'Confirm Password is required'
   } else if (values.confirmPassword !== values.password) {
@@ -106,7 +106,7 @@ export const validateForgotPassword = (values) => {
     }
   }
 
-  // ✅ Confirm password validation
+  //  Confirm password validation
   if (!values.confirmPassword) {
     errors.confirmPassword = 'Confirm password is required'
   } else if (values.newPassword !== values.confirmPassword) {

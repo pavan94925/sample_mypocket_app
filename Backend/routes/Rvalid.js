@@ -49,7 +49,6 @@ const loginValidationRules = [
   body('password').notEmpty().withMessage('Password is required'),
 ]
 
-// Validation middleware
 const validateRequest = (req, res, next) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {

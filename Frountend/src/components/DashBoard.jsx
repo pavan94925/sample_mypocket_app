@@ -55,7 +55,7 @@ const DashBoard = () => {
         Welcome, {user?.fullname || 'User'} 
       </h2>
 
-      {/* ✅ Stats */}
+      {/*  Stats */}
       <div className="row text-center mb-4">
         <div className="col">
           <div className="p-3 bg-primary text-white rounded shadow">

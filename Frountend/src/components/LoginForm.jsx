@@ -1,8 +1,9 @@
-// src/components/LoginForm.jsx
 import React, { useState } from 'react'
 import { loginUser } from '../components/Api'
 import { validateLogin } from '../components/Validation'
 import { Link, useNavigate } from 'react-router-dom'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({ email: '', password: '' })
@@ -25,14 +26,13 @@ const LoginForm = () => {
       try {
         const response = await loginUser(formData)
 
-        // ✅ Save token and user to localStorage
         localStorage.setItem('token', response.data.token)
         localStorage.setItem('user', JSON.stringify(response.data.user))
 
-        console.log('Login successful!', response.data)
+        toast.success(' Login successful!')
         navigate('/dashboard')
       } catch (error) {
-        alert(error.response?.data?.message || 'Login failed')
+        toast.error(error.response?.data?.message || 'Login failed')
       }
     }
   }
@@ -40,7 +40,6 @@ const LoginForm = () => {
   return (
     <div className="container-fluid min-vh-100 bg-light d-flex align-items-center">
       <div className="row w-100">
-        {/* Left Panel */}
         <div className="col-md-6 d-flex flex-column justify-content-center p-5">
           <h1 className="text-danger fw-bold display-4">Mypocket</h1>
           <h2 className="fs-5 mt-3">
@@ -49,7 +48,6 @@ const LoginForm = () => {
           </h2>
         </div>
 
-        {/* Right Panel */}
         <div className="col-md-6 d-flex justify-content-center align-items-center">
           <div className="card shadow p-4 w-75">
             <h3 className="text-center mb-3">Login</h3>
@@ -107,7 +105,7 @@ const LoginForm = () => {
             <hr />
             <Link to="/register">
               <button
-                className="btn btn-primary  w-100"
+                className="btn btn-primary w-100"
                 style={{ height: '50px' }}
               >
                 Create New Account
@@ -116,6 +114,9 @@ const LoginForm = () => {
           </div>
         </div>
       </div>
+
+      {/* ✅ Toast container to show toast messages */}
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   )
 }

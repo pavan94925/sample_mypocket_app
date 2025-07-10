@@ -3,7 +3,7 @@ import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import { validateForgotPassword } from '../components/Validation' // ✅ Update path if needed
+import { validateForgotPassword } from '../components/Validation' 
 
 function ForgotPassword() {
   const [email, setEmail] = useState('')

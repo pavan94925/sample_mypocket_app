@@ -8,11 +8,12 @@ const RegisterForm = () => {
     fullname: '',
     email: '',
     password: '',
-    confirmPassword: '', // ✅ Add this
+    confirmPassword: '',
   })
 
   const [errors, setErrors] = useState({})
   const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false) 
   const navigate = useNavigate()
 
   const handleChange = (e) => {
@@ -23,7 +24,7 @@ const RegisterForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log('Submit clicked ✅')
+    console.log('Submit clicked ')
 
     const validationErrors = validateRegistration(formData)
     console.log('Validation Errors:', validationErrors)
@@ -32,11 +33,11 @@ const RegisterForm = () => {
     if (Object.keys(validationErrors).length === 0) {
       try {
         await registerUser(formData)
-        alert('✅ Registration successful!')
-        navigate('/') // Navigate to login page
+        alert(' Registration successful!')
+        navigate('/') 
       } catch (error) {
         console.log(error.response?.data)
-        alert(error.response?.data?.message || '❌ Registration failed')
+        alert(error.response?.data?.message || ' Registration failed')
       }
     }
   }
@@ -73,7 +74,6 @@ const RegisterForm = () => {
               <div className="invalid-feedback">{errors.email}</div>
             )}
           </div>
-
           <div className="mb-3 position-relative">
             <input
               type={showPassword ? 'text' : 'password'}
@@ -94,11 +94,9 @@ const RegisterForm = () => {
               {showPassword ? 'Hide' : 'Show'}
             </span>
           </div>
-
-          {/*  Confirm Password Field */}
-          <div className="mb-3">
+          <div className="mb-3 position-relative">
             <input
-              type="password"
+              type={showConfirmPassword ? 'text' : 'password'}
               name="confirmPassword"
               placeholder="Confirm Password"
               className={`form-control ${
@@ -110,6 +108,13 @@ const RegisterForm = () => {
             {errors.confirmPassword && (
               <div className="invalid-feedback">{errors.confirmPassword}</div>
             )}
+            <span
+              className="position-absolute top-50 end-0 translate-middle-y me-3"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              style={{ cursor: 'pointer', userSelect: 'none' }}
+            >
+              {showConfirmPassword ? 'Hide' : 'Show'}
+            </span>
           </div>
 
           <button
