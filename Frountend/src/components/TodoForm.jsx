@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { createTodo, updateTodo } from '../components/Api'
 import { toast } from 'react-toastify'
+import { useDispatch } from 'react-redux'
+import { createNewTodo, updateExistingTodo } from '../featuers/todo/todoSlice'
 
-const TodoForm = ({ refreshTodos, editTask, setEditTask }) => {
+const TodoForm = ({ editTask, setEditTask }) => {
+  const dispatch = useDispatch()
+
   const [todo, setTodo] = useState({
     title: '',
     description: '',
@@ -51,22 +54,20 @@ const TodoForm = ({ refreshTodos, editTask, setEditTask }) => {
 
     try {
       if (editTask) {
-        await updateTodo(editTask.id, todo)
-        toast.success(' Task Updated!')
+        await dispatch(updateExistingTodo({ id: editTask.id, todo })).unwrap()
+        toast.success('✅ Task Updated!')
       } else {
-        await createTodo(todo)
-        toast.success(' Task Created!')
+        await dispatch(createNewTodo(todo)).unwrap()
+        toast.success('✅ Task Created!')
       }
       resetForm()
-      refreshTodos()
     } catch (err) {
-      toast.error(err.response?.data?.message || '❌ Operation failed')
+      toast.error(err || '❌ Operation failed')
     }
   }
 
   return (
     <>
-      {/* Add New Button */}
       <button
         className="btn btn-outline-primary fw-bold px-4 py-2 rounded-pill shadow-sm"
         onClick={() => setShowModal(true)}
@@ -74,10 +75,8 @@ const TodoForm = ({ refreshTodos, editTask, setEditTask }) => {
         Add New Task
       </button>
 
-      {/* Modal */}
       {showModal && (
         <>
-          {/* Overlay background */}
           <div
             className="position-fixed top-0 start-0 w-100 h-100"
             style={{
@@ -88,7 +87,6 @@ const TodoForm = ({ refreshTodos, editTask, setEditTask }) => {
               alignItems: 'center',
             }}
           >
-            {/* Modal Box */}
             <div
               className="bg-white rounded-4 shadow-lg p-4 w-100"
               style={{ maxWidth: '500px' }}
@@ -104,9 +102,7 @@ const TodoForm = ({ refreshTodos, editTask, setEditTask }) => {
                 ></button>
               </div>
 
-              {/* Form */}
               <form onSubmit={handleSubmit}>
-                {/* Title */}
                 <div className="mb-3">
                   <label className="form-label">Title</label>
                   <input
@@ -124,7 +120,6 @@ const TodoForm = ({ refreshTodos, editTask, setEditTask }) => {
                   )}
                 </div>
 
-                {/* Description */}
                 <div className="mb-3">
                   <label className="form-label">Description</label>
                   <textarea
@@ -142,7 +137,6 @@ const TodoForm = ({ refreshTodos, editTask, setEditTask }) => {
                   )}
                 </div>
 
-                {/* Status */}
                 <div className="mb-4">
                   <label className="form-label">Status</label>
                   <select
@@ -156,7 +150,6 @@ const TodoForm = ({ refreshTodos, editTask, setEditTask }) => {
                   </select>
                 </div>
 
-                {/* Buttons */}
                 <div className="d-flex justify-content-end">
                   <button
                     type="button"

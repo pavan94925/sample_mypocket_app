@@ -1,34 +1,27 @@
-// src/components/DashBoard.jsx
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchTodos } from '../featuers/todo/todoSlice'
 import { useNavigate } from 'react-router-dom'
 import TodoForm from '../components/TodoForm'
 import TodoList from '../components/TodoList'
-import { getTodos } from '../components/Api'
 
 const DashBoard = () => {
-  const [todos, setTodos] = useState([])
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const { todos, loading } = useSelector((state) => state.todo)
+
   const [user, setUser] = useState(null)
   const [filter, setFilter] = useState('all')
   const [editTask, setEditTask] = useState(null)
 
-  const navigate = useNavigate()
-
-  const fetchTodos = async () => {
-    try {
-      const response = await getTodos()
-      setTodos(response.data.tasks)
-    } catch (err) {
-      console.error('Failed to load todos:', err.message)
-    }
-  }
-
   useEffect(() => {
-    fetchTodos()
+    dispatch(fetchTodos())
     const userInfo = localStorage.getItem('user')
     if (userInfo) {
       setUser(JSON.parse(userInfo))
     }
-  }, [])
+  }, [dispatch])
 
   const handleLogout = () => {
     localStorage.removeItem('token')
@@ -59,7 +52,6 @@ const DashBoard = () => {
 
   return (
     <div className="container mx-auto p-4">
-      {/* Welcome + Logout row */}
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h2 className="text-2xl font-bold">Hi, {user?.fullname || 'User'}</h2>
         <button className="btn btn-outline-danger" onClick={handleLogout}>
@@ -67,7 +59,6 @@ const DashBoard = () => {
         </button>
       </div>
 
-      {/* Stats */}
       <div className="row text-center mb-4">
         <div className="col">
           <div className="p-3 bg-primary text-white rounded shadow">
@@ -101,7 +92,7 @@ const DashBoard = () => {
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-             Filter: {filter.charAt(0).toUpperCase() + filter.slice(1)}
+            Filter: {filter.charAt(0).toUpperCase() + filter.slice(1)}
           </button>
           <ul className="dropdown-menu" aria-labelledby="filterDropdown">
             {['all', 'completed', 'incomplete', 'today'].map((option) => (
@@ -121,17 +112,12 @@ const DashBoard = () => {
         </div>
       </div>
 
-      <TodoForm
-        refreshTodos={fetchTodos}
-        editTask={editTask}
-        setEditTask={setEditTask}
-      />
+      {/* ✅ Show loading */}
+      {loading && <p className="text-center">Loading tasks...</p>}
 
-      <TodoList
-        todos={filteredTodos}
-        refreshTodos={fetchTodos}
-        setEditTask={setEditTask}
-      />
+      <TodoForm editTask={editTask} setEditTask={setEditTask} />
+
+      <TodoList todos={filteredTodos} setEditTask={setEditTask} />
     </div>
   )
 }

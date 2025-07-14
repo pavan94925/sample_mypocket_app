@@ -1,31 +1,35 @@
-// src/components/TodoList.jsx
 import React, { useState } from 'react'
-import { deleteTodo, updateTodo } from '../components/Api'
 import { toast } from 'react-toastify'
+import { useDispatch } from 'react-redux'
+import {
+  deleteExistingTodo,
+  updateExistingTodo,
+} from '../featuers/todo/todoSlice'
 
-const TodoList = ({ todos, refreshTodos, setEditTask }) => {
+const TodoList = ({ todos, setEditTask }) => {
+  const dispatch = useDispatch()
   const [editTaskLocal, setEditTaskLocal] = useState(null)
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this task?')) {
       try {
-        await deleteTodo(id)
+        await dispatch(deleteExistingTodo(id)).unwrap()
         toast.success('🗑️ Task deleted successfully')
-        refreshTodos()
       } catch (err) {
-        toast.error(err.response?.data?.message || '❌ Failed to delete task')
+        toast.error(err || '❌ Failed to delete task')
       }
     }
   }
 
   const handleSaveEdit = async () => {
     try {
-      await updateTodo(editTaskLocal.id, editTaskLocal)
+      await dispatch(
+        updateExistingTodo({ id: editTaskLocal.id, todo: editTaskLocal })
+      ).unwrap()
       toast.success('✅ Task updated successfully')
       setEditTaskLocal(null)
-      refreshTodos()
     } catch (err) {
-      toast.error(err.response?.data?.message || '❌ Failed to update task')
+      toast.error(err || '❌ Failed to update task')
     }
   }
 
@@ -107,8 +111,7 @@ const TodoList = ({ todos, refreshTodos, setEditTask }) => {
         </div>
       )}
 
-      {/* Modal UI for Edit Task */}
-      {/* Modal UI for Edit Task */}
+      {/* Modal for Editing */}
       {editTaskLocal && (
         <>
           <div className="modal show d-block" tabIndex="-1" role="dialog">
@@ -188,7 +191,6 @@ const TodoList = ({ todos, refreshTodos, setEditTask }) => {
             </div>
           </div>
 
-          {/* ✅ backdrop */}
           <div className="modal-backdrop fade show"></div>
         </>
       )}
@@ -197,4 +199,3 @@ const TodoList = ({ todos, refreshTodos, setEditTask }) => {
 }
 
 export default TodoList
-
