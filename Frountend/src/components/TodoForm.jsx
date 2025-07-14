@@ -10,6 +10,7 @@ const TodoForm = ({ refreshTodos, editTask, setEditTask }) => {
   })
 
   const [errors, setErrors] = useState({})
+  const [showModal, setShowModal] = useState(false)
 
   useEffect(() => {
     if (editTask) {
@@ -18,6 +19,7 @@ const TodoForm = ({ refreshTodos, editTask, setEditTask }) => {
         description: editTask.description,
         status: editTask.status,
       })
+      setShowModal(true)
     }
   }, [editTask])
 
@@ -32,6 +34,13 @@ const TodoForm = ({ refreshTodos, editTask, setEditTask }) => {
     return errors
   }
 
+  const resetForm = () => {
+    setShowModal(false)
+    setEditTask(null)
+    setErrors({})
+    setTodo({ title: '', description: '', status: 'incomplete' })
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     const validationErrors = validate()
@@ -44,92 +53,128 @@ const TodoForm = ({ refreshTodos, editTask, setEditTask }) => {
       if (editTask) {
         await updateTodo(editTask.id, todo)
         toast.success(' Task Updated!')
-        setEditTask(null)
       } else {
         await createTodo(todo)
-        toast.success(' Todo Created!')
+        toast.success(' Task Created!')
       }
-      setTodo({ title: '', description: '', status: 'incomplete' })
-      setErrors({})
+      resetForm()
       refreshTodos()
     } catch (err) {
-      toast.error(err.response?.data?.message || ' Operation failed')
+      toast.error(err.response?.data?.message || '❌ Operation failed')
     }
   }
 
   return (
-    <div className="container my-4">
-      <form
-        className="bg-white p-4 rounded shadow w-100"
-        onSubmit={handleSubmit}
+    <>
+      {/* Add New Button */}
+      <button
+        className="btn btn-outline-primary fw-bold px-4 py-2 rounded-pill shadow-sm"
+        onClick={() => setShowModal(true)}
       >
-        <div className="mb-3">
-          <input
-            className={`form-control ${
-              errors.title ? 'border border-danger' : ''
-            }`}
-            type="text"
-            name="title"
-            value={todo.title}
-            onChange={handleChange}
-            placeholder="Enter Title"
-          />
-          {errors.title && (
-            <div className="text-danger mt-1" style={{ fontSize: '14px' }}>
-              {errors.title}
-            </div>
-          )}
-        </div>
+        Add New Task
+      </button>
 
-        <div className="mb-3">
-          <textarea
-            className={`form-control ${
-              errors.description ? 'border border-danger' : ''
-            }`}
-            name="description"
-            value={todo.description}
-            onChange={handleChange}
-            placeholder="Enter Description"
-          />
-          {errors.description && (
-            <div className="text-danger mt-1" style={{ fontSize: '14px' }}>
-              {errors.description}
-            </div>
-          )}
-        </div>
-
-        <div className="mb-3">
-          <select
-            className="form-control"
-            name="status"
-            value={todo.status}
-            onChange={handleChange}
+      {/* Modal */}
+      {showModal && (
+        <>
+          {/* Overlay background */}
+          <div
+            className="position-fixed top-0 start-0 w-100 h-100"
+            style={{
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              zIndex: 1050,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
           >
-            <option value="incomplete">Incomplete</option>
-            <option value="complete">Complete</option>
-          </select>
-        </div>
-
-        <div className="d-flex flex-column flex-md-row gap-2">
-          <button className="btn btn-primary w-100" type="submit">
-            {editTask ? 'Update Task' : 'Add Task'}
-          </button>
-          {editTask && (
-            <button
-              className="btn btn-secondary w-100"
-              type="button"
-              onClick={() => {
-                setEditTask(null)
-                setTodo({ title: '', description: '', status: 'incomplete' })
-                setErrors({})
-              }}
+            {/* Modal Box */}
+            <div
+              className="bg-white rounded-4 shadow-lg p-4 w-100"
+              style={{ maxWidth: '500px' }}
             >
-              Cancel
-            </button>
-          )}
-        </div>
-      </form>
-    </div>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h5 className="m-0 text-primary fw-bold">
+                  {editTask ? ' Edit Task' : ' Add New Task'}
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={resetForm}
+                ></button>
+              </div>
+
+              {/* Form */}
+              <form onSubmit={handleSubmit}>
+                {/* Title */}
+                <div className="mb-3">
+                  <label className="form-label">Title</label>
+                  <input
+                    type="text"
+                    name="title"
+                    className={`form-control ${
+                      errors.title ? 'is-invalid' : ''
+                    }`}
+                    value={todo.title}
+                    onChange={handleChange}
+                    placeholder="Enter task title"
+                  />
+                  {errors.title && (
+                    <div className="invalid-feedback">{errors.title}</div>
+                  )}
+                </div>
+
+                {/* Description */}
+                <div className="mb-3">
+                  <label className="form-label">Description</label>
+                  <textarea
+                    name="description"
+                    rows="3"
+                    className={`form-control ${
+                      errors.description ? 'is-invalid' : ''
+                    }`}
+                    value={todo.description}
+                    onChange={handleChange}
+                    placeholder="Enter task description"
+                  ></textarea>
+                  {errors.description && (
+                    <div className="invalid-feedback">{errors.description}</div>
+                  )}
+                </div>
+
+                {/* Status */}
+                <div className="mb-4">
+                  <label className="form-label">Status</label>
+                  <select
+                    name="status"
+                    className="form-select"
+                    value={todo.status}
+                    onChange={handleChange}
+                  >
+                    <option value="incomplete">Incomplete</option>
+                    <option value="complete">Complete</option>
+                  </select>
+                </div>
+
+                {/* Buttons */}
+                <div className="d-flex justify-content-end">
+                  <button
+                    type="button"
+                    className="btn btn-secondary me-2"
+                    onClick={resetForm}
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn btn-primary">
+                    {editTask ? 'Update Task' : 'Add Task'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </>
+      )}
+    </>
   )
 }
 
