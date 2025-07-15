@@ -1,18 +1,17 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import {
-  getTodos,
-  createTodo,
-  updateTodo,
-  deleteTodo,
-} from '../../components/Api'
+import axios from 'axios'
 
-// ✅ Thunks for API calls
+const BASE_URL = 'http://localhost:3002/api/todos'
 
+// ✅ Fetch Todos
 export const fetchTodos = createAsyncThunk(
   'todo/fetchTodos',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await getTodos()
+      const token = localStorage.getItem('token')
+      const response = await axios.get(BASE_URL, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       return response.data.tasks
     } catch (err) {
       return rejectWithValue(
@@ -22,11 +21,15 @@ export const fetchTodos = createAsyncThunk(
   }
 )
 
+// ✅ Create New Todo
 export const createNewTodo = createAsyncThunk(
   'todo/createNewTodo',
   async (todo, { rejectWithValue }) => {
     try {
-      const response = await createTodo(todo)
+      const token = localStorage.getItem('token')
+      const response = await axios.post(`${BASE_URL}/create`, todo, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       return response.data.task
     } catch (err) {
       return rejectWithValue(
@@ -36,11 +39,15 @@ export const createNewTodo = createAsyncThunk(
   }
 )
 
+// ✅ Update Existing Todo
 export const updateExistingTodo = createAsyncThunk(
   'todo/updateExistingTodo',
   async ({ id, todo }, { rejectWithValue }) => {
     try {
-      const response = await updateTodo(id, todo)
+      const token = localStorage.getItem('token')
+      const response = await axios.put(`${BASE_URL}/update/${id}`, todo, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       return response.data.task
     } catch (err) {
       return rejectWithValue(
@@ -50,11 +57,15 @@ export const updateExistingTodo = createAsyncThunk(
   }
 )
 
+// ✅ Delete Existing Todo
 export const deleteExistingTodo = createAsyncThunk(
   'todo/deleteExistingTodo',
   async (id, { rejectWithValue }) => {
     try {
-      await deleteTodo(id)
+      const token = localStorage.getItem('token')
+      await axios.delete(`${BASE_URL}/delete/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       return id
     } catch (err) {
       return rejectWithValue(
@@ -64,8 +75,7 @@ export const deleteExistingTodo = createAsyncThunk(
   }
 )
 
-// ✅ Slice
-
+// ✅ Todo Slice
 const todoSlice = createSlice({
   name: 'todo',
   initialState: {
@@ -76,7 +86,6 @@ const todoSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // ✅ Fetch Todos
       .addCase(fetchTodos.pending, (state) => {
         state.loading = true
       })
@@ -89,12 +98,10 @@ const todoSlice = createSlice({
         state.error = action.payload
       })
 
-      // ✅ Create Todo
       .addCase(createNewTodo.fulfilled, (state, action) => {
         state.todos.push(action.payload)
       })
 
-      // ✅ Update Todo
       .addCase(updateExistingTodo.fulfilled, (state, action) => {
         const index = state.todos.findIndex(
           (todo) => todo.id === action.payload.id
@@ -104,7 +111,6 @@ const todoSlice = createSlice({
         }
       })
 
-      // ✅ Delete Todo
       .addCase(deleteExistingTodo.fulfilled, (state, action) => {
         state.todos = state.todos.filter((todo) => todo.id !== action.payload)
       })

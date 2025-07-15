@@ -55,14 +55,14 @@ const TodoForm = ({ editTask, setEditTask }) => {
     try {
       if (editTask) {
         await dispatch(updateExistingTodo({ id: editTask.id, todo })).unwrap()
-        toast.success('✅ Task Updated!')
+        toast.success(' Task Updated!')
       } else {
         await dispatch(createNewTodo(todo)).unwrap()
-        toast.success('✅ Task Created!')
+        toast.success(' Task Created!')
       }
       resetForm()
     } catch (err) {
-      toast.error(err || '❌ Operation failed')
+      toast.error(err || ' Operation failed')
     }
   }
 

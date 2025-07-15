@@ -1,31 +1,38 @@
-// src/App.js
-
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap/dist/js/bootstrap.bundle.min.js'; 
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import 'react-toastify/dist/ReactToastify.css'
 
-// Component Imports
-import LoginForm from './components/LoginForm'
-import RegisterForm from './components/RegisterForm'
+import AuthForm from './components/AuthForm'
 import DashBoard from './components/DashBoard'
 import ForgotPassword from './components/ForgotPassword'
 
 function App() {
+  const { token } = useSelector((state) => state.auth)
+
   return (
     <Router>
       <Routes>
-        {/* Default Route → Login */}
-        <Route path="/" element={<LoginForm />} />
+        {/* ✅ Default Route - Show AuthForm */}
+        <Route
+          path="/"
+          element={!token ? <AuthForm /> : <Navigate to="/dashboard" />}
+        />
 
-        {/* Registration Page */}
-        <Route path="/register" element={<RegisterForm />} />
+        {/* ✅ Dashboard - Protected */}
+        <Route
+          path="/dashboard"
+          element={token ? <DashBoard /> : <Navigate to="/" />}
+        />
 
-        {/* Dashboard Page (for Todos etc.) */}
-        <Route path="/dashboard" element={<DashBoard />} />
-
-        {/* Forgot Password */}
+        {/* ✅ Forgot Password */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
     </Router>

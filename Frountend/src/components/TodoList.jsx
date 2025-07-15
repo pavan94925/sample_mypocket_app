@@ -6,7 +6,7 @@ import {
   updateExistingTodo,
 } from '../featuers/todo/todoSlice'
 
-const TodoList = ({ todos, setEditTask }) => {
+const TodoList = ({ todos }) => {
   const dispatch = useDispatch()
   const [editTaskLocal, setEditTaskLocal] = useState(null)
 
@@ -52,14 +52,7 @@ const TodoList = ({ todos, setEditTask }) => {
               <div className="shadow-sm h-100 rounded-4 p-3 bg-white">
                 <div className="d-flex flex-column justify-content-between h-100">
                   <div>
-                    <h5
-                      className="fw-larg text-muted"
-                      style={{
-                        wordWrap: 'break-word',
-                        overflowWrap: 'break-word',
-                        whiteSpace: 'normal',
-                      }}
-                    >
+                    <h5 className="fw-larg text-muted">
                       {task.title}
                       {task.status.toLowerCase() === 'complete' ? (
                         <span className="badge bg-success ms-2">✔️ Done</span>
@@ -69,15 +62,7 @@ const TodoList = ({ todos, setEditTask }) => {
                         </span>
                       )}
                     </h5>
-                    <p
-                      style={{
-                        wordWrap: 'break-word',
-                        overflowWrap: 'break-word',
-                        whiteSpace: 'pre-wrap',
-                      }}
-                    >
-                      {task.description}
-                    </p>
+                    <p>{task.description}</p>
                     <p className="text-muted mb-1">
                       <strong>Started:</strong>{' '}
                       {new Date(task.startedAt).toLocaleString()}
@@ -111,7 +96,7 @@ const TodoList = ({ todos, setEditTask }) => {
         </div>
       )}
 
-      {/* Modal for Editing */}
+      {/* ✅ Edit Task Modal */}
       {editTaskLocal && (
         <>
           <div className="modal show d-block" tabIndex="-1" role="dialog">
@@ -125,55 +110,54 @@ const TodoList = ({ todos, setEditTask }) => {
                     onClick={handleCancelEdit}
                   ></button>
                 </div>
+
                 <div className="modal-body">
-                  <form>
-                    <div className="mb-3">
-                      <label className="form-label">Title</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={editTaskLocal.title}
-                        onChange={(e) =>
-                          setEditTaskLocal({
-                            ...editTaskLocal,
-                            title: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
+                  <div className="mb-3">
+                    <label className="form-label">Title</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={editTaskLocal.title}
+                      onChange={(e) =>
+                        setEditTaskLocal({
+                          ...editTaskLocal,
+                          title: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
 
-                    <div className="mb-3">
-                      <label className="form-label">Description</label>
-                      <textarea
-                        className="form-control"
-                        rows="3"
-                        value={editTaskLocal.description}
-                        onChange={(e) =>
-                          setEditTaskLocal({
-                            ...editTaskLocal,
-                            description: e.target.value,
-                          })
-                        }
-                      ></textarea>
-                    </div>
+                  <div className="mb-3">
+                    <label className="form-label">Description</label>
+                    <textarea
+                      className="form-control"
+                      rows="3"
+                      value={editTaskLocal.description}
+                      onChange={(e) =>
+                        setEditTaskLocal({
+                          ...editTaskLocal,
+                          description: e.target.value,
+                        })
+                      }
+                    ></textarea>
+                  </div>
 
-                    <div className="mb-3">
-                      <label className="form-label">Status</label>
-                      <select
-                        className="form-select"
-                        value={editTaskLocal.status}
-                        onChange={(e) =>
-                          setEditTaskLocal({
-                            ...editTaskLocal,
-                            status: e.target.value,
-                          })
-                        }
-                      >
-                        <option value="Incomplete">Incomplete</option>
-                        <option value="Complete">Complete</option>
-                      </select>
-                    </div>
-                  </form>
+                  <div className="mb-3">
+                    <label className="form-label">Status</label>
+                    <select
+                      className="form-select"
+                      value={editTaskLocal.status}
+                      onChange={(e) =>
+                        setEditTaskLocal({
+                          ...editTaskLocal,
+                          status: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="Incomplete">Incomplete</option>
+                      <option value="Complete">Complete</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div className="modal-footer">
